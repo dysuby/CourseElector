@@ -3,7 +3,7 @@ var fs = require('fs');
 var cheerio = require('cheerio');
 var path = require('path');
 
-var getInfo = require('./get');
+var get = require('./get');
 
 var url = 'https://cas.sysu.edu.cn/cas/login?service=http%3A%2F%2Fnetpay.sysu.edu.cn%2Fnetpay%2FcasLogin';
 // var url = "https://cas.sysu.edu.cn/cas/login?service=https%3A%2F%2Fuems.sysu.edu.cn%2Felect%2FcasLogin";
@@ -49,8 +49,23 @@ function getCaptha(cookie) {
     headers: headers,
   };
   request(opt).pipe(fs.createWriteStream(capthcaPath));
-  console.log('验证码已保存在capthca文件夹中');
-  return account;
+  // console.log('验证码已保存在capthca文件夹中');
+}
+
+function getInfo() {
+  console.log("-----登录CAS-----");
+  return get("netID: ").then(ans => {
+    account.username = ans;
+    return get("密码(明文输入): ");
+  }).then(ans => {
+    account.password = ans;
+    return get("验证码: ");
+  }).then(ans => {
+    account.captcha = ans;
+    return Promise.resolve();
+  }).catch(err => {
+    console.log(err);
+  });
 }
 
 function sign() {
