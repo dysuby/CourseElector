@@ -19,7 +19,7 @@ var headers = {
   'Accept-Language': 'zh-CN,zh;q=0.9',
 };
 
-var capthcaPath = path.join(__dirname + '/../capthca/captcha.jpg');
+var capthcaPath = path.join(__dirname + '/../captcha/captcha.jpg');
 
 var $ = null;
 var account = {};
