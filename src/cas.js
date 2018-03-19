@@ -5,9 +5,8 @@ var path = require('path');
 
 var get = require('./get');
 
-var url = 'https://cas.sysu.edu.cn/cas/login?service=http%3A%2F%2Fnetpay.sysu.edu.cn%2Fnetpay%2FcasLogin';
-// var url = "https://cas.sysu.edu.cn/cas/login?service=https%3A%2F%2Fuems.sysu.edu.cn%2Felect%2FcasLogin";
-var capthca = 'https://cas.sysu.edu.cn/cas/captcha.jsp';
+var url = "https://cas.sysu.edu.cn/cas/login";
+var captcha = 'https://cas.sysu.edu.cn/cas/captcha.jsp';
 var headers = {
   'host': 'cas.sysu.edu.cn',
   'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36',
@@ -16,13 +15,19 @@ var headers = {
   'upgrade-insecure-requests': 1,
   'cache-control': 'max-age=0',
   'connection': 'keep-alive',
-  'Accept-Language': 'zh-CN,zh;q=0.9',
+  'accept-language': 'zh-CN,zh;q=0.9',
 };
 
-var capthcaPath = path.join(__dirname + '/../captcha/captcha.jpg');
+var captchaPath = path.join(__dirname + '/../captcha/captcha.jpg');
+var captchaDir = path.join(__dirname + '/../captcha');
 
 var $ = null;
 var account = {};
+
+request = request.defaults({
+  jar: true,
+  followAllRedirects: true
+});
 
 function connect() {
   return new Promise((resolve, reject) => {
@@ -32,8 +37,6 @@ function connect() {
     };
     request(opt, (err, res, body) => {
       if (err || res.statusCode != 200) console.error('连接CAS失败');
-      if (!headers.cookie)
-        headers.cookie = request.cookie(res.headers['set-cookie'][0]);
       $ = cheerio.load(body);
       $('input').each((i, ele) => {
         account[$(ele).attr('name')] = $(ele).val();
@@ -45,11 +48,13 @@ function connect() {
 
 function getCaptha(cookie) {
   var opt = {
-    url: capthca,
+    url: captcha,
     headers: headers,
   };
-  request(opt).pipe(fs.createWriteStream(capthcaPath));
-  // console.log('验证码已保存在capthca文件夹中');
+  if (!fs.existsSync(captchaDir))
+    fs.mkdirSync(captchaDir);
+  request(opt).pipe(fs.createWriteStream(captchaPath));
+  console.log('验证码已保存在capthca文件夹中');
 }
 
 function getInfo() {
@@ -77,19 +82,23 @@ function sign() {
   return new Promise((resolve, reject) => {
     request.post(opt, (err, res, body) => {
       $ = cheerio.load(body);
-      if (res.statusCode != 302) {
-        console.log($('#msg').text() + '\n');
+      if ($('.alert.alert-danger').length) {
+        console.log($('.alert.alert-danger').children('span').text() + '\n');
         reject();
       } else {
         console.log('登录CAS成功');
-        resolve(headers.cookie);
+        resolve();
       }
     });
   });
 }
 
-function signIn() {
-  return connect().then(getCaptha).then(getInfo).then(sign).catch(signIn);
+function cas() {
+  return connect().then(getCaptha).then(getInfo).then(sign).catch(cas);
 }
 
-module.exports = signIn;
+module.exports = {
+  cas,
+  request,
+  headers
+};
