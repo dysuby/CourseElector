@@ -1,2 +1,4 @@
-captcha/*
+captcha/*.jpg
 node_modules
+.vscode
+account.js

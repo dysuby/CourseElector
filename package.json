@@ -5,12 +5,15 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "dev": "nodemon --inspect=5858 index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "vegchic",
+  "private": true,
   "license": "ISC",
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
-    "request": "^2.87.0"
+    "request": "^2.87.0",
+    "request-promise-native": "^1.0.5"
   }
 }
