@@ -31,12 +31,12 @@ async function connect() {
   form.password = account.password;
 }
 
-async function getCaptha() {
+async function getCaptcha() {
   opt.uri = captcha;
   // if (!fs.existsSync(captchaDir))
   //   fs.mkdirSync(captchaDir);
   rp(opt).pipe(fs.createWriteStream(captchaPath));
-  console.log('验证码已保存在capthca文件夹中');
+  console.log('验证码已保存在captcha文件夹中');
   console.log('-----登录CAS-----');
   form.captcha = await ask('验证码: ');
 }
@@ -55,7 +55,7 @@ async function sign() {
 }
 
 async function cas() {
-  return await connect().then(getCaptha).then(sign).catch(err => process.exit(0));
+  return await connect().then(getCaptcha).then(sign).catch(err => process.exit(0));
 }
 
 module.exports = cas;
