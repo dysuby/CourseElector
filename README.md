@@ -1,6 +1,6 @@
 # SYSU course elector
 
-一个简单的选课脚本。。可能了解一定的js语法
+一个简单的选课脚本。。可能要了解一定的js语法
 
 ## Quick Start
 初次使用须安装`node`，命令行输入`npm install`
