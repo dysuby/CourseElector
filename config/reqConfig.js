@@ -10,11 +10,4 @@ module.exports = {
     'connection': 'keep-alive',
     'accept-language': 'zh-CN,zh;q=0.9',
   },
-  target: [
-    {
-      course: 'DCS239181001',
-      type: '专选'
-    },
-  ],
-  delay: 500
 }

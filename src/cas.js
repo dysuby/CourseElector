@@ -7,8 +7,8 @@ const rp = require('request-promise-native').defaults({
 });
 
 const ask = require('./ask');
-const { casUrl, captcha, headers } = require('../config');
-const account = require('../account');
+const { casUrl, captcha, headers } = require('../config/reqConfig');
+const { account } = require('../config/user');
 
 const captchaDir = path.join(__dirname, '../captcha');
 const captchaPath = path.join(__dirname, '../captcha/captcha.jpg');

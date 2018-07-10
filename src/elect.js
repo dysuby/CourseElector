@@ -2,7 +2,8 @@ const url = require('url');
 const qs = require('querystring');
 const cheerio = require('cheerio');
 const cas = require('./cas');
-const { headers, casUrl, target, electUrl, delay } = require('../config');
+const { headers, casUrl, electUrl } = require('../config/reqConfig');
+const { target, delay } = require('../config/user');
 
 async function begin() {
   function parse(href) {
