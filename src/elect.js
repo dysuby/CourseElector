@@ -13,16 +13,16 @@ async function begin() {
   const opt = {
     uri: casUrl,
     headers,
-    transform: function (body) {
+    transform: function(body) {
       return cheerio.load(body);
     }
-  }
+  };
   const $ = await rp(opt);
 
   // 获得参数
   const sid = $('#sid').val();
-  const pro_zid = parse(($('a')[2]).attribs.href).xkjdszid;
-  const public_zid = parse(($('a')[4]).attribs.href).xkjdszid;
+  const pro_zid = parse($('a')[2].attribs.href).xkjdszid;
+  const public_zid = parse($('a')[4].attribs.href).xkjdszid;
   const len = target.length;
 
   // 开始选课
@@ -31,30 +31,34 @@ async function begin() {
       jxbh: v.course,
       xkjdszid: v.type === '公选' ? public_zid : pro_zid,
       sid
-    }
+    };
     const id = setInterval(() => {
       rp.post({
         url: electUrl,
         headers,
         form,
-        transform: function (body) {
+        transform: function(body) {
           return cheerio.load(body);
         }
-      }).then($ => {
-        const result = JSON.parse($('textarea').text());
-        if (result.err.code === 0) {
-          console.log('选课成功');
+      })
+        .then($ => {
+          const result = JSON.parse($('textarea').text());
+          if (result.err.code === 0) {
+            console.log('选课成功');
+            clearInterval(id);
+            --len;
+            if (!len) process.exit(0);
+          } else {
+            console.log(
+              `${form.jxbh} 选课失败: ${result.err.caurse}，continue...`
+            );
+          }
+        })
+        .catch(err => {
           clearInterval(id);
-          --len;
-          if (!len) process.exit(0);
-        } else {
-          console.log(`${form.jxbh} 选课失败: ${result.err.caurse}，continue...`);
-        }
-      }).catch(err => {
-        clearInterval(id);
-        console.log('出错啦');
-        process.exit(0);
-      });
+          console.log('出错啦');
+          process.exit(0);
+        });
     }, delay);
   });
 }

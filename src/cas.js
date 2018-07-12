@@ -10,13 +10,13 @@ const ask = require('./ask');
 const { casUrl, captcha, headers } = require('../config/reqConfig');
 const { account } = require('../config/user');
 
-const captchaDir = path.join(__dirname, '../captcha');
+// const captchaDir = path.join(__dirname, '../captcha');
 const captchaPath = path.join(__dirname, '../captcha/captcha.jpg');
 
 let form = {};
 let opt = {
   headers,
-  transform: function (body) {
+  transform: function(body) {
     return cheerio.load(body);
   }
 };
@@ -46,7 +46,11 @@ async function sign() {
   opt.form = form;
   const $ = await rp.post(opt);
   if ($('.alert.alert-danger').length) {
-    console.log($('.alert.alert-danger').children('span').text() + '\n');
+    console.log(
+      $('.alert.alert-danger')
+        .children('span')
+        .text()
+    );
     throw new Error();
   } else {
     console.log('登录CAS成功');
@@ -55,7 +59,10 @@ async function sign() {
 }
 
 async function cas() {
-  return await connect().then(getCaptcha).then(sign).catch(err => process.exit(0));
+  return await connect()
+    .then(getCaptcha)
+    .then(sign)
+    .catch(err => process.exit(0));
 }
 
 module.exports = cas;

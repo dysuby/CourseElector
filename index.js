@@ -1,3 +1,3 @@
-const begin = require('./src/elect')
+const begin = require('./src/elect');
 
 begin();
