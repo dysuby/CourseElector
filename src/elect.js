@@ -25,7 +25,6 @@ async function begin() {
   const sid = $('#sid').val();
   const pro_zid = parse($('a')[2].attribs.href).xkjdszid;
   const public_zid = parse($('a')[4].attribs.href).xkjdszid;
-  const len = target.length;
 
   // 开始选课
   let counter = 0;
@@ -54,8 +53,6 @@ async function begin() {
         const result = JSON.parse($('textarea').text());
         if (result.err.code === 0) {
           console.log(`${v.course} 选课成功`);
-          --len;
-          if (!len) process.exit(0);
         } else {
           if (counter === Number.MAX_SAFE_INTEGER) counter = 0;
           else ++counter;
@@ -67,7 +64,6 @@ async function begin() {
       })
       .catch(err => {
         console.log('出错啦');
-        process.exit(0);
       });
   }
 }
