@@ -4,6 +4,7 @@ const cheerio = require('cheerio');
 const cas = require('./cas');
 const { headers, casUrl, electUrl } = require('../config/reqConfig');
 const { target, delay } = require('../config/user');
+const msg = require('../config/msg');
 
 async function begin() {
   function parse(href) {
@@ -32,6 +33,7 @@ async function begin() {
       xkjdszid: v.type === '公选' ? public_zid : pro_zid,
       sid
     };
+    let counter = 0;
     const id = setInterval(() => {
       rp.post({
         url: electUrl,
@@ -49,8 +51,12 @@ async function begin() {
             --len;
             if (!len) process.exit(0);
           } else {
+            if (counter === Number.MAX_SAFE_INTEGER) counter = 0;
+            else ++counter;
             console.log(
-              `${form.jxbh} 选课失败: ${result.err.caurse}，continue...`
+              `${form.jxbh} 第${counter}次选课失败: ${
+                msg[result.err.code]
+              }，continue...`
             );
           }
         })
