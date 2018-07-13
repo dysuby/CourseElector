@@ -61,7 +61,7 @@ async function begin() {
         }
       })
       .catch(err => {
-        console.log('出错啦');
+        console.log(err);
       });
   }
 }
