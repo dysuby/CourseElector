@@ -30,7 +30,7 @@ async function begin() {
   let counter = 0;
 
   target.forEach(v => {
-    setTimeout(elect.bind(null, v), 2000 + Math.random() * 1000);
+    setTimeout(elect.bind(null, v), 1000 + Math.random() * 1000);
   });
 
   async function elect(v) {
@@ -57,7 +57,7 @@ async function begin() {
           console.log(
             `${form.jxbh} 第${counter}次选课失败: ${msg[result.err.code]}`
           );
-          setTimeout(elect.bind(null, v), 2000 + Math.random() * 1000);
+          setTimeout(elect.bind(null, v), 1000 + Math.random() * 1000);
         }
       })
       .catch(err => {
