@@ -27,42 +27,48 @@ async function begin() {
   const public_zid = parse($('a')[4].attribs.href).xkjdszid;
 
   // 开始选课
-  let counter = 0;
+  let counter = 0,
+    index = 0;
 
-  target.forEach(v => {
-    setTimeout(elect.bind(null, v), 1000 + Math.random() * 1000);
-  });
+  try {
+    elect();
+  } catch (err) {
+    console.error(err);
+  }
 
-  async function elect(v) {
+  async function elect() {
+    const value = target[index];
+
+    if (index < target.length - 1) ++index;
+    else index = 0;
+
     const form = {
-      jxbh: v.course,
-      xkjdszid: v.type === '公选' ? public_zid : pro_zid,
+      jxbh: value.course,
+      xkjdszid: value.type === '公选' ? public_zid : pro_zid,
       sid
     };
-    rp.post({
+    const $ = await rp.post({
       url: electUrl,
       headers,
       form,
       transform: function(body) {
         return cheerio.load(body);
       }
-    })
-      .then($ => {
-        const result = JSON.parse($('textarea').text());
-        if (result.err.code === 0) {
-          console.log(`${v.course} 选课成功`);
-        } else {
-          if (counter === Number.MAX_SAFE_INTEGER) counter = 0;
-          else ++counter;
-          console.log(
-            `${form.jxbh} 第${counter}次选课失败: ${msg[result.err.code]}`
-          );
-          setTimeout(elect.bind(null, v), 1000 + Math.random() * 1000);
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    });
+
+    const result = JSON.parse($('textarea').text());
+    if (result.err.code === 0) {
+      console.log(`${value.course} 选课成功`);
+    } else {
+      if (counter !== Number.MAX_SAFE_INTEGER) ++counter;
+      else counter = 0;
+
+      console.log(
+        `${form.jxbh} 第${counter}次选课失败: ${msg[result.err.code]}`
+      );
+
+      setTimeout(elect, 1500 + Math.random() * 1500);
+    }
   }
 }
 
