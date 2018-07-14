@@ -30,13 +30,7 @@ async function begin() {
   let counter = 0,
     index = 0;
 
-  try {
-    elect();
-  } catch (err) {
-    console.error(err);
-  }
-
-  async function elect() {
+  (async function elect() {
     const value = target[index];
 
     if (index < target.length - 1) ++index;
@@ -47,29 +41,33 @@ async function begin() {
       xkjdszid: value.type === '公选' ? public_zid : pro_zid,
       sid
     };
-    const $ = await rp.post({
-      url: electUrl,
-      headers,
-      form,
-      transform: function(body) {
-        return cheerio.load(body);
+
+    try {
+      const $ = await rp.post({
+        url: electUrl,
+        headers,
+        form,
+        transform: function(body) {
+          return cheerio.load(body);
+        }
+      });
+      const result = JSON.parse($('textarea').text());
+      if (result.err.code === 0) {
+        console.log(`${value.course} 选课成功`);
+      } else {
+        if (counter !== Number.MAX_SAFE_INTEGER) ++counter;
+        else counter = 0;
+
+        console.log(
+          `${form.jxbh} 第${counter}次选课失败: ${msg[result.err.code]}`
+        );
+
+        setTimeout(elect, 1500 + Math.random() * 1500);
       }
-    });
-
-    const result = JSON.parse($('textarea').text());
-    if (result.err.code === 0) {
-      console.log(`${value.course} 选课成功`);
-    } else {
-      if (counter !== Number.MAX_SAFE_INTEGER) ++counter;
-      else counter = 0;
-
-      console.log(
-        `${form.jxbh} 第${counter}次选课失败: ${msg[result.err.code]}`
-      );
-
-      setTimeout(elect, 1500 + Math.random() * 1500);
+    } catch (err) {
+      console.log(err);
     }
-  }
+  })();
 }
 
 module.exports = begin;
