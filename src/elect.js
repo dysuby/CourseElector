@@ -30,7 +30,10 @@ async function begin() {
   let counter = 0,
     index = 0;
 
-  (async function elect() {
+  console.log('三秒后开始选课');
+  setTimeout(elect, 3000);
+
+  async function elect() {
     const value = target[index];
 
     if (index < target.length - 1) ++index;
@@ -67,7 +70,7 @@ async function begin() {
     } catch (err) {
       console.log(err);
     }
-  })();
+  }
 }
 
 module.exports = begin;
