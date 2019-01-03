@@ -1,5 +1,7 @@
 # SYSU course elector
 
+**！！！！废弃中！！！！**，中大改了选课系统
+
 一个简单的选课脚本。。可能要了解一定的 js 语法
 
 ## Quick Start
