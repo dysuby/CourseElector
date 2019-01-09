@@ -1,8 +1,12 @@
 module.exports = {
   casUrl:
-    'https://cas.sysu.edu.cn/cas/login?service=https%3A%2F%2Fuems.sysu.edu.cn%2Felect%2FcasLogin',
+    'https://cas.sysu.edu.cn/cas/login?service=https%3A%2F%2Fuems.sysu.edu.cn%2Fjwxt%2Fapi%2Fsso%2Fcas%2Flogin%3Fpattern%3Dstudent-login',
   captcha: 'https://cas.sysu.edu.cn/cas/captcha.jsp',
-  electUrl: 'https://uems.sysu.edu.cn/elect/s/elect',
+  jwxt: 'https://uems.sysu.edu.cn/jwxt/mk/courseSelection/',
+  electUrl:
+    'https://uems.sysu.edu.cn/jwxt/choose-course-front-server/classCourseInfo/course/choose',
+  listUrl:
+    'https://uems.sysu.edu.cn/jwxt/choose-course-front-server/classCourseInfo/course/list',
   headers: {
     accept: '*/*',
     'user-agent':
