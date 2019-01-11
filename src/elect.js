@@ -23,8 +23,33 @@ async function begin() {
     uri: jwxt,
     headers
   });
+
+  console.log('三秒后开始选课');
+
+  await new Promise(resolve => {
+    setTimeout(() => {
+      resolve();
+    }, 3000);
+  });
+
   let list = [];
   while (list.length !== target.length) {
+    await getList();
+    await new Promise(resolve => {
+      setTimeout(() => {
+        resolve();
+      }, 500);
+    });
+  }
+
+  // 开始选课
+  let counter = 0;
+  let index = 0;
+  let left = target;
+
+  elect();
+
+  async function getList() {
     list = [];
     console.log('获得课程名单....');
     for (const tar of target) {
@@ -58,14 +83,6 @@ async function begin() {
       }
     }
   }
-
-  // 开始选课
-  let counter = 0;
-  let index = 0;
-  let left = target;
-
-  console.log('三秒后开始选课');
-  setTimeout(elect, 3000);
 
   async function elect() {
     if (!left.length) return;
