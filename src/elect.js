@@ -24,33 +24,37 @@ async function begin() {
     headers
   });
   let list = [];
-  for (const tar of target) {
-    const info = await rp.post({
-      uri: `${listUrl}?_t=${Date.now()}`,
-      headers,
-      json: {
-        pageNo: 1,
-        pageSize: 1000,
-        param: {
-          semesterYear: semesterYear,
-          ...selectCate[tar.type],
-          hiddenConflictStatus: '0',
-          hiddenSelectedStatus: '0',
-          collectionStatus: '0'
+  while (list.length !== target.length) {
+    list = [];
+    console.log('获得课程名单....');
+    for (const tar of target) {
+      const info = await rp.post({
+        uri: `${listUrl}?_t=${Date.now()}`,
+        headers,
+        json: {
+          pageNo: 1,
+          pageSize: 1000,
+          param: {
+            semesterYear: semesterYear,
+            ...selectCate[tar.type],
+            hiddenConflictStatus: '0',
+            hiddenSelectedStatus: '0',
+            collectionStatus: '0'
+          }
         }
-      }
-    });
-    if (info.code === 200 && info.data.rows) {
-      for (const clazz of info.data.rows) {
-        if (clazz.courseName === tar.name)
-          list.push({
-            name: tar.name,
-            body: {
-              clazzId: clazz.teachingClassId,
-              check: true,
-              ...selectCate[tar.type]
-            }
-          });
+      });
+      if (info.code === 200 && info.data.rows) {
+        for (const clazz of info.data.rows) {
+          if (clazz.courseName.indexOf(tar.name) !== -1)
+            list.push({
+              name: tar.name,
+              body: {
+                clazzId: clazz.teachingClassId,
+                check: true,
+                ...selectCate[tar.type]
+              }
+            });
+        }
       }
     }
   }
@@ -83,7 +87,7 @@ async function begin() {
         console.log(`${name} 第${++counter}次选课失败: 选课失败`);
       }
     }
-    
+
     if (index < target.length - 1) ++index;
     else index = 0;
 
