@@ -80,7 +80,7 @@ async function begin() {
       }
     } catch (err) {
       if (err.response.body) {
-        console.log(`${name} 第${++counter}次选课失败: ${err.response.body.message}`);
+        console.log(`${name} 第${++counter}次选课失败: 选课失败`);
       }
     }
     
