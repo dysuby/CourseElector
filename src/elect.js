@@ -33,13 +33,28 @@ async function begin() {
   });
 
   let list = [];
+  let errcount = 0;
   while (list.length !== target.length) {
-    await getList();
-    await new Promise(resolve => {
-      setTimeout(() => {
-        resolve();
-      }, 500);
-    });
+    try {
+      await getList();
+      await new Promise(resolve => {
+        setTimeout(() => {
+          resolve();
+        }, 500);
+      });
+    } catch (err) {
+      console.log('获取名单失败，重试中');
+      ++errcount;
+      if (errcount === 10) {
+        console.log('获取失败，退出');
+        process.exit(1);
+      }
+      await new Promise(resolve => {
+        setTimeout(() => {
+          resolve();
+        }, 1000);
+      });
+    }
   }
 
   // 开始选课
