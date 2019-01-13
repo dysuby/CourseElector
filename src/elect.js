@@ -28,31 +28,6 @@ async function begin() {
     }, 3000);
   });
 
-  let list = [];
-  let errcount = 0;
-  while (list.length !== target.length) {
-    try {
-      await getList();
-      await new Promise(resolve => {
-        setTimeout(() => {
-          resolve();
-        }, 500);
-      });
-    } catch (err) {
-      console.log('获取名单失败，重试中');
-      ++errcount;
-      if (errcount === 10) {
-        console.log('获取失败，退出');
-        process.exit(1);
-      }
-      await new Promise(resolve => {
-        setTimeout(() => {
-          resolve();
-        }, 1000);
-      });
-    }
-  }
-
   // 开始选课
   let counter = 0;
   let index = 0;
@@ -60,47 +35,48 @@ async function begin() {
 
   elect();
 
-  async function getList() {
-    list = [];
-    console.log('获得课程名单....');
-    for (const tar of target) {
-      const info = await rp.post({
-        uri: `${listUrl}?_t=${Date.now()}`,
-        headers,
-        json: {
-          pageNo: 1,
-          pageSize: 1000,
-          param: {
-            semesterYear: semesterYear,
-            ...selectCate[tar.type],
-            hiddenConflictStatus: '0',
-            hiddenSelectedStatus: '0',
-            collectionStatus: '0'
-          }
+  async function getInfo(course) {
+    const info = await rp.post({
+      uri: `${listUrl}?_t=${Date.now()}`,
+      headers,
+      json: {
+        pageNo: 1,
+        pageSize: 1000,
+        param: {
+          semesterYear: semesterYear,
+          ...selectCate[course.type],
+          hiddenConflictStatus: '0',
+          hiddenSelectedStatus: '0',
+          collectionStatus: '0'
         }
-      });
-      if (info.code === 200 && info.data.rows) {
-        for (const clazz of info.data.rows) {
-          if (clazz.courseName.indexOf(tar.name) !== -1)
-            list.push({
-              name: tar.name,
-              body: {
-                clazzId: clazz.teachingClassId,
-                check: true,
-                ...selectCate[tar.type]
-              }
-            });
+      }
+    });
+    if (info.code === 200 && info.data.rows) {
+      for (const clazz of info.data.rows) {
+        const index = clazz.courseName.indexOf(course.name);
+        if (index === -1) continue;
+        else if (clazz.baseReceiveNum - Number(clazz.courseSelectedNum) > 0) {
+          return {
+            name: course.name,
+            body: {
+              clazzId: clazz.teachingClassId,
+              check: true,
+              ...selectCate[course.type]
+            }
+          };
+        } else {
+          throw Error('空位不足');
         }
       }
     }
+    throw Error('无此课程');
   }
 
   async function elect() {
     if (!left.length) return;
 
-    const { body, name } = list[index];
-
     try {
+      const { body, name } = await getInfo(left[index]);
       const res = await rp.post({
         url: `${electUrl}?_t=${Date.now()}`,
         headers,
@@ -108,17 +84,20 @@ async function begin() {
       });
       if (res.code === 200) {
         console.log(`${name} 选课成功`);
-        left = left.splice(index, 1);
+        left.splice(index, 1);
         setTimeout(elect, 500);
       }
     } catch (err) {
-      if (err.response.body) {
-        console.log(`${name} 第${++counter}次选课失败: 选课失败`);
+      if (err.message) {
+        console.log(`${left[index].name} 第${++counter}次选课失败: ${err.message}`);
+        setTimeout(elect, 500);
+      } else if (err.response.body) {
+        console.log(`${left[index].name} 第${++counter}次选课失败: ${err.response.body.message}`);
+        setTimeout(elect, 1500 + Math.random() * 1500);
       }
-      setTimeout(elect, 1500 + Math.random() * 1500);
     }
 
-    if (index < target.length - 1) ++index;
+    if (index < left.length - 1) ++index;
     else index = 0;
   }
 }
