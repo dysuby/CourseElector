@@ -4,16 +4,17 @@
 
 ## Quick Start
 
-初次使用须安装`node`，命令行输入`npm install`
+初次使用须安装 `node` ，命令行输入 `npm install`
 
-在`config/`下新建`user.js`，内容按下面模板：
+在 `config/` 下新建 `user.js`，内容按下面模板：
 
 ```js
 module.exports = {
   account: {
-    username: '666', // 你的NetID
+    username: '666', // 你的 NetID
     password: '666' // 你的密码
   },
+  semesterYear: '2018-2', // 学年，示例为 2018 学年第 2 学期
   target: [
     // 你要选的课
     {
@@ -28,11 +29,11 @@ module.exports = {
 };
 ```
 
-然后 `npm start`/ `node index.js` 即可
+然后 `npm start` / `node index.js` 即可
 
 ## 验证码
 
-CAS 验证码保存在`./capthca`文件夹中，可自行在`./src/cas.js`修改保存路径
+CAS 验证码保存在 `./capthca` 文件夹中，可自行在 `./src/cas.js` 修改保存路径
 
 ## Thanks
 
