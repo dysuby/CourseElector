@@ -19,10 +19,6 @@ const selectCate = {
 
 async function begin() {
   const rp = await cas();
-  await rp({
-    uri: jwxt,
-    headers
-  });
 
   console.log('三秒后开始选课');
 
