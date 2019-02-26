@@ -67,8 +67,7 @@ async function begin() {
             name: course.name,
             body: null
           };
-        }
-        else if (clazz.baseReceiveNum - Number(clazz.courseSelectedNum) > 0) {
+        } else if (clazz.baseReceiveNum - Number(clazz.courseSelectedNum) > 0) {
           // 有空位
           return {
             name: course.name,
@@ -82,7 +81,7 @@ async function begin() {
           throw Error('空位不足');
         }
       }
-    } 
+    }
     throw Error('无此课程');
   }
 
@@ -95,8 +94,7 @@ async function begin() {
       if (!body) {
         left.splice(index, 1);
         setTimeout(elect, 500);
-      }
-      else {
+      } else {
         const res = await rp.post({
           url: `${electUrl}?_t=${Date.now()}`,
           headers,
@@ -113,11 +111,17 @@ async function begin() {
     } catch (err) {
       if (err.message) {
         // getInfo 出错，只等待 0.5~1 秒
-        console.log(`${left[index].name} 第${++counter}次选课失败: ${err.message}`);
+        console.log(
+          `${left[index].name} 第${++counter}次选课失败: ${err.message}`
+        );
         setTimeout(elect, 500 + Math.random() * 500);
       } else if (err.response.body) {
         // 选课出错，等待 1.5~3 秒
-        console.log(`${left[index].name} 第${++counter}次选课失败: ${err.response.body.message}`);
+        console.log(
+          `${left[index].name} 第${++counter}次选课失败: ${
+            err.response.body.message
+          }`
+        );
         setTimeout(elect, 1500 + Math.random() * 1500);
       }
     }
