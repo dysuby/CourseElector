@@ -60,6 +60,14 @@ async function begin() {
       for (const clazz of info.data.rows) {
         const index = clazz.courseName.indexOf(course.name);
         if (index === -1) continue;
+        else if (4 === Number(clazz.selectedStatus)) {
+          // 遇到已选上课程
+          console.log(`${course.name} 已选上`);
+          return {
+            name: course.name,
+            body: null
+          };
+        }
         else if (clazz.baseReceiveNum - Number(clazz.courseSelectedNum) > 0) {
           // 有空位
           return {
@@ -74,7 +82,7 @@ async function begin() {
           throw Error('空位不足');
         }
       }
-    }
+    } 
     throw Error('无此课程');
   }
 
@@ -84,17 +92,23 @@ async function begin() {
 
     try {
       const { body, name } = await getInfo(left[index]);
-      const res = await rp.post({
-        url: `${electUrl}?_t=${Date.now()}`,
-        headers,
-        json: body
-      });
-      if (res.code === 200) {
-        console.log(`${name} 选课成功`);
-        // 从候选数组移去
+      if (!body) {
         left.splice(index, 1);
-        // 选课成功只等待 0.5 秒
         setTimeout(elect, 500);
+      }
+      else {
+        const res = await rp.post({
+          url: `${electUrl}?_t=${Date.now()}`,
+          headers,
+          json: body
+        });
+        if (res.code === 200) {
+          console.log(`${name} 选课成功`);
+          // 从候选数组移去
+          left.splice(index, 1);
+          // 选课成功只等待 0.5 秒
+          setTimeout(elect, 500);
+        }
       }
     } catch (err) {
       if (err.message) {
