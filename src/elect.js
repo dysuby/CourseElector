@@ -59,7 +59,7 @@ async function begin() {
       // 在返回的列表中查找该课程
       for (const clazz of info.data.rows) {
         const index = clazz.courseName.indexOf(course.name);
-        if (index === -1 && clazz.teachingTimePlace.indexOf(course.teacher) === -1) continue;
+        if (index === -1 || clazz.teachingTimePlace.indexOf(course.teacher) === -1) continue;
         if (4 === Number(clazz.selectedStatus)) {
           // 遇到已选上课程
           console.log(`${course.name} 已选上`);
@@ -109,21 +109,21 @@ async function begin() {
         }
       }
     } catch (err) {
-      if (err.message) {
+      if (err.error) {
+        // 选课出错，等待 1.5~3 秒
+        console.log(
+          `${left[index].name} 第${++counter}次选课失败: ${
+            err.error.message
+          }`
+        );
+        setTimeout(elect, 1500 + Math.random() * 1500);
+      } else if (err.message) {
         // getInfo 出错，只等待 0.5~1 秒
         console.log(
           `${left[index].name} 第${++counter}次选课失败: ${err.message}`
         );
         setTimeout(elect, 500 + Math.random() * 500);
-      } else if (err.response.body) {
-        // 选课出错，等待 1.5~3 秒
-        console.log(
-          `${left[index].name} 第${++counter}次选课失败: ${
-            err.response.body.message
-          }`
-        );
-        setTimeout(elect, 1500 + Math.random() * 1500);
-      }
+      } 
     }
 
     if (index < left.length - 1) ++index;
