@@ -62,7 +62,10 @@ async function cas() {
   return await connect()
     .then(getCaptcha)
     .then(sign)
-    .catch(err => process.exit(0));
+    .catch(err => {
+      console.log(err.message);
+      process.exit(1);
+    });
 }
 
 module.exports = cas;
