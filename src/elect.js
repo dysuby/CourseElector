@@ -98,9 +98,9 @@ async function begin() {
       }
     } catch (err) {
       if (err.message) {
-        // getInfo 出错，只等待 0.5 秒
+        // getInfo 出错，只等待 0.5~1 秒
         console.log(`${left[index].name} 第${++counter}次选课失败: ${err.message}`);
-        setTimeout(elect, 500);
+        setTimeout(elect, 500 + Math.random() * 500);
       } else if (err.response.body) {
         // 选课出错，等待 1.5~3 秒
         console.log(`${left[index].name} 第${++counter}次选课失败: ${err.response.body.message}`);
