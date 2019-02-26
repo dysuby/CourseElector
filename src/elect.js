@@ -58,8 +58,9 @@ async function begin() {
     if (info.code === 200 && info.data.rows) {
       // 在返回的列表中查找该课程
       for (const clazz of info.data.rows) {
-        const index = clazz.courseName.indexOf(course.name);
-        if (index === -1 || clazz.teachingTimePlace.indexOf(course.teacher) === -1) continue;
+        // 查看是否为是对方的子串
+        const index = clazz.courseName.indexOf(course.name) + course.name.indexOf(clazz.courseName);
+        if (index === -2 || clazz.teachingTimePlace.indexOf(course.teacher) === -1) continue;
         if (4 === Number(clazz.selectedStatus)) {
           // 遇到已选上课程
           console.log(`${course.name} 已选上`);
